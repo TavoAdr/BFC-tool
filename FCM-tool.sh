@@ -58,6 +58,23 @@ fi
 
 clear
 
+# Avoid conflict
+
+# - - If have ' e " -> remove '
+if [[ `echo $mainFolder | grep -c "'"` -gt 0 && `echo $mainFolder | grep -c '"'` -gt 0 ]]
+then
+    mainFolder=$(echo $mainFolder | tr -d "'")
+
+# - - If don't have ' and " -> add "
+elif [[ `echo $mainFolder | grep -c "'"` -le 0 && `echo $mainFolder | grep -c '"'` -le 0 ]]
+then
+    mainFolder=$(echo ¨$mainFolder¨ | tr -s '¨' '"')
+fi
+
+## - - If have " or ' -> it's okay
+
+clear
+
 # validate folder
 cd $mainFolder #&> /dev/null
 
