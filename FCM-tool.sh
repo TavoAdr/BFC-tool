@@ -269,7 +269,8 @@ until
 
                     ;;
                     
-                    2) # Type name
+                     # Type name
+                    2)
 
                         
 
@@ -289,7 +290,8 @@ until
 
         ;;
 
-        *) # Try again
+        # Try again
+        *)
         
             clear ;
             read -sp "    Invalid value, type ENTER and try again: " enterKey
