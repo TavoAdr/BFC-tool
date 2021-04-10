@@ -11,15 +11,17 @@ elif [ $# -ge 1 ]; then
     mainFolder=$1
 fi
 
+clear
+
 # Choose Remove space
 [[ `echo $mainFolder | grep -c " "` -ne 0 ]] && \
 
     while
     
-        read -p "    The path to the folder has space, do you want enter a path without space to avoid errors(Y/N): " option
+        read -p "    The path to the folder has space, do you want enter a path without space to avoid errors?(Y/N): " option
 
         if [[ $option = 'Y' || $option = 'y' ]]; then
-            clear; read -p "    Enter a path to the main folder: " $mainFolder
+            clear; read -p "    Enter a path to the main folder: " mainFolder
 
         elif [[ $option != 'N' && $option != 'n' ]]; then
             clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
@@ -33,3 +35,12 @@ fi
 validateFolder $mainFolder main
 
 cd $mainFolder
+
+ # TEST $#=0 (0 folder)
+  # válido -> continue 
+  # inválido -> retype | create
+  # espaço -> choose remove space
+ # TEST $#=1 (1 folder)
+  # válido -> continue 
+  # inválido -> retype | create
+  # espaço -> take just the first

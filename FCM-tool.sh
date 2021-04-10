@@ -1,10 +1,19 @@
 #!/bin/env bash
 
-# Program file folders
-path=`echo $(pwd)/$0 | rev | cut -c13- | rev`
+# Set the path to Program file folders (Use to call others files of the program)
+cd `echo $0 | rev | cut -c13- | rev`
+path=`echo $(pwd)`
+ # NOTE | Define Path : if use ../FCM-tool to call the program ($0=..FCM-tool), use cd $0 and path=pwd work, but path=$pwd/$0 no, because it's equal ~/dir/../FCM-tool, the is invalide because no exist FCM-tool in ~
 
-# Program file 
-source $path/functions.sh
+ # TEST path
+  # $HOME or $OLDPWD
+  # ~ 
+  # ./ or ../
+
+cd $OLDPWD
+
+clear
+
 source $path/setMainFolder.sh $1
 
 clear
@@ -28,7 +37,7 @@ until
         1)
 
             clear
-            # TODO (Arquivo) Add the file function
+            createFiles
 
         ;;
 
@@ -52,17 +61,25 @@ until
                      # All
                     1)
 
+                         # NOTE | read all folders: use <<< for the read command to read the return from ls, except for files with a dot in their middle (delete files) and space (avoid errors) and place them inside the folderList in the array format (-a) and delimit folders by the presence of space (-d '') 
                         clear; read -ra folderList -d '' <<<`ls -I '*.*' -I '* *'`
                         
                         if [ `echo ${#folderList[*]}` -eq 0 ]; then
-                            echo -n "    Empty folder."
+                            echo -n "    Empty folder"
+                            read -sp ", type ENTER and try again: " enterKey
+                            option=0
                         
                         else
+                            # NOTE | Echo FolderList and Text : Echoes the formatted text (-e) on the screen, also showing the return of the code that shows the list of folders in the folderList, exchanging space for comma. (It causes the return of the function that shows the list and not the direct list, as this part is accompanied by the tr -s, which changes the space ('') with a comma (','), which if it were together would exchange the space for comma of entire text
                             echo -e "    You will create your files in the folder(s): `echo ${folderList[*]} | tr -s ' ' ', '`\n"
 
-                            validateFolderList
+                            clear
 
-                            editFolderList
+                            source $path/functions.sh validateFolderList
+
+                            clear
+
+                            source $path/functions.sh editFolderList
 
                         fi
 
@@ -75,9 +92,13 @@ until
 
                         echo -e "    You will create your files in the folder(s): `echo ${folderList[*]} | tr -s ' ' ', '`\n"
                         
-                        validateFolderList
+                        clear
 
-                        editFolderList
+                        source $path/functions.sh validateFolderList
+
+                        clear
+
+                        source $path/functions.sh editFolderList
 
                     ;;
 
@@ -103,7 +124,4 @@ until
     esac
 
 [[ $option -ge 1 && $option -le 2 ]]
-    do true ; done
-
-# TODO usar funções para automatizar tudo 
-
+do true ; done
