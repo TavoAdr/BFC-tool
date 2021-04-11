@@ -24,9 +24,6 @@ function validateFolder(){
                 validateFolder $folder
             
             ;;
-             # TEST create folder
-              # normal -> create
-              # with space -> change space to hyphen
 
             2) # Retype
             
@@ -34,12 +31,9 @@ function validateFolder(){
                 validateFolder $folder
             
             ;;
-             # TEST retype
-              # valid -> retest
-              # invalid -> choose again what to do
 
             *) # Try again
-                clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+                clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
             ;;
 
         esac
@@ -47,6 +41,12 @@ function validateFolder(){
     fi
 
 }
+# TEST create folder (1)
+# normal -> create
+# with space -> change space to hyphen
+# TEST retype (2)
+# valid -> retest
+# invalid -> choose again what to do
 
 function validateFolderList(){
 
@@ -89,9 +89,6 @@ function editFolderList(){
 
             ;;
 
-             # TEST mk n ad to list
-              # sem espaço -> just create
-              # com espaço -> add hyphen
             
             # Remove folder
             2) 
@@ -100,7 +97,7 @@ function editFolderList(){
 
                 if [[ -z ${folderList[*]} ]]; then
                     echo -en "    You can't remove folders of the list because the folder list is empty, "
-                    read -sp "type ENTER to continue. . ." enterKey
+                    read -sp "type 'ENTER' to continue. . ." enterKey
 
                 else
 
@@ -147,17 +144,13 @@ function editFolderList(){
 
             ;;
 
-             # TEST remove
-              # invalid position -> error message
-              # 1 position -> remove
-              # all elements -> empty list
              
             # Continue
             3)
                 clear
                 if [[ -z ${folderList[*]} ]]; then
                     echo -en "\n    You can't continue because there are no folders in the list, "
-                    read -sp "type ENTER to continue. . ." enterKey
+                    read -sp "type 'ENTER' to continue. . ." enterKey
                 else
                     
                     createSubFolder
@@ -168,16 +161,15 @@ function editFolderList(){
                 fi
                     
             ;;
-             # TEST continue
-              # continue if empty list -> error message
+
             *) 
-                clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+                clear; read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
             ;;
         esac
 
         [[ ! -z ${folderList[*]} ]] && \
             echo -e "\n    Folder(s): `echo ${folderList[*]} | tr -s ' ' ', '`\n" && \
-            read -sp "    Type ENTER to continue. . ." enterKey
+            read -sp "    Type 'ENTER' to continue. . ." enterKey
         
         clear
 
@@ -185,6 +177,15 @@ function editFolderList(){
     do true; done
     
 }
+             # TEST mk n ad to list (1)
+              # sem espaço -> just create
+              # com espaço -> add hyphen
+             # TEST remove (2)
+              # invalid position -> error message
+              # 1 position -> remove
+              # all elements -> empty list
+             # TEST continue (3)
+              # continue if empty list -> error message
 
 function createSubFolder(){
 
@@ -194,7 +195,7 @@ function createSubFolder(){
 
         if [[ $option = 'Y' || $option = 'y' ]]; then
             clear; read -p "    Enter the name to the subfolder: " newFolder
-            subFolder=`echo $newFolder | tr -s ' ' '-'`
+            subFolder=`echo $newFolder/ | tr -s ' ' '-'`
 
             for a in ${folderList[@]}; do
                 mkdir -p $a/$subFolder
@@ -202,7 +203,7 @@ function createSubFolder(){
             done
 
         elif [[ $option != 'N' && $option != 'n' ]]; then
-            clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+            clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
         fi
 
         clear
@@ -211,6 +212,13 @@ function createSubFolder(){
     do true ; done
 
 }
+ # TEST subFolder (*)
+ # Error message
+ # TEST subFolder (n)
+  # Continue (file)
+ # TEST subFolder (y)
+  # type with space -> replace the space to hyphen
+  # ENTER -> validate folder
 
 function createFiles(){
 
@@ -229,25 +237,102 @@ function createFiles(){
         
         clear; read -p "    Enter the name of the extensions (different extensions separated by space and without dot): " -ra extensionList
 
-        clear; echo -e "    You intend to create the `echo ${fileList[@]} | tr -s ' ' ','` files of extension `echo ${extensionList[@]} | tr -s ' ' ','`."
+        
+        clear; echo -e "    You intend to create the `echo ${fileList[@]} | tr -s ' ' ','` files of extension `echo ${extensionList[@]} | tr -s ' ' ','`.\n"
+
+        if [[ -n $option ]]; then
+            fileNumber=$(( ${#folderList[@]} * ${#fileList[@]} * ${#extensionList[@]} ))
+        else
+            fileNumber=$(( ${#fileList[@]} * ${#extensionList[@]} ))
+        fi
+        contFiles=0
+
+        read -sp "    Type 'ENTER' to continue. . ." enterKey; clear
 
         case $option in
 
             # 1 - 1
             1)
+
+                if [[ ${#folderList[@]} -eq ${#extensionList[@]} ]]; then
+                    
+                    for(( i=0; i<${#extensionList[@]}; i++ ));
+                    do                        
+                      
+                        clear; read -p "    Enter text to be added to all files of extension ${extensionList[$i]}(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+
+                        for fil in ${fileList[@]}
+                        do
+                            
+                            echo $fileText > `echo ${folderList[$i]}`/`echo $subFolder``echo $fil | tr -d '.'`.`echo ${extensionList[$i]}  | tr -d '.'`
+
+                            [[ $? -eq 0 ]] && \
+                                let contFiles++;
+                    
+                        done
+
+                    done
+                        
+                else
+                    clear; read -sp "    When using this method, the number of files must equal the number of extensions, type 'ENTER' to continue. . ." enterKey
+                    option=127
+                fi
+
             ;;
             
             # all - all
             2)
+
+                for ext in ${extensionList[@]}
+                do
+
+                    clear; read -p "    Enter text to be added to all files of extension $ext(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+                        
+                    for fold in ${folderList[@]}
+                    do
+
+                        for fil in ${fileList[@]}
+                        do
+                            
+                            echo $fileText > `echo $fold`/`echo $subFolder``echo $fil | tr -d '.'`.`echo $ext  | tr -d '.'`
+
+                            [[ $? -eq 0 ]] && \
+                                let contFiles++;
+                    
+                        done
+                        
+                    done
+                
+                done
+                
             ;;
 
             # simple
             '')
+
+                for ext in ${extensionList[@]}
+                do
+                    
+                    clear; read -p "    Enter text to be added to all files of extension $ext(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+
+                    for fil in ${fileList[@]}
+                    do
+                        
+                        echo $fileText > `echo $fil | tr -d '.'`.`echo $ext  | tr -d '.'`
+
+                        [[ $? -eq 0 ]] && \
+                            let contFiles++;
+                   
+                    done
+                    
+                done
+                
+
             ;;
             
             # try again
             *) 
-                clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+                clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
             ;;
 
         esac
@@ -255,6 +340,18 @@ function createFiles(){
     [[ $option -lt 1 || $option -gt 2 ]]
     do true ; done
 
+    clear; read -sp "    $contFiles of $fileNumber files created successfully, type 'ENTER' to close." enterKey
+    exit 0
+
 }
+ # TEST enter var
+  # File and Extensions with dot -> create file without dot
+  # File and Extensions without dot -> create file without dot
+ # TEST method
+  # 1
+   # ne sizes of vars -> show error message
+   # eq sizes of vars -> continue
+  # 2
+  # ''
 
 $1 $2 # Call the function and one argument

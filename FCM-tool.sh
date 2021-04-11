@@ -5,7 +5,7 @@ cd `echo $0 | rev | cut -c13- | rev`
 path=`echo $(pwd)`
  # NOTE | Define Path : if use ../FCM-tool to call the program ($0=..FCM-tool), use cd $0 and path=pwd work, but path=$pwd/$0 no, because it's equal ~/dir/../FCM-tool, the is invalide because no exist FCM-tool in ~
 
- # TEST path
+ # TEST path 
   # $HOME or $OLDPWD
   # ~ 
   # ./ or ../
@@ -22,7 +22,7 @@ until
 
     clear
 
-    echo -e "    How do you want to create the file?\n\n\t1) In a single folder\n\t2) In multiple folder\n"
+    echo -e "    How do you want to create the file?\n\n\t1) In a single folder\n\t2) In multiple folder\n\t0) Exit"
 
     read option
 
@@ -66,7 +66,7 @@ until
                         
                         if [ `echo ${#folderList[*]}` -eq 0 ]; then
                             echo -n "    Empty folder"
-                            read -sp ", type ENTER and try again: " enterKey
+                            read -sp ", type 'ENTER' and try again. . ." enterKey
                             option=0
                         
                         else
@@ -105,7 +105,7 @@ until
                     *) 
 
                         clear ;
-                        read -sp "    Invalid value, type ENTER and try again: " enterKey
+                        read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
 
                     ;;
 
@@ -118,10 +118,20 @@ until
 
         # Try again
         *) 
-            clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+            clear; read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
         ;;
 
     esac
 
 [[ $option -ge 1 && $option -le 2 ]]
 do true ; done
+
+# TEST type 1
+ # -1 and 7 -> Error message
+ # o ->  Exit
+ # 1 ->  Continue ( file )
+ # 2 ->  Continue ( single or all )
+# TEST type 2 ( single or all )
+ # 0 -> Back ( Lose list )
+ # 1 -> Empty -> Error message | continue ( Edit List )
+ # 2 -> Empty -> ( Continue, but show Error message if don't include a folder to list ) | sdfghghj -> error message ( validate folder )
