@@ -18,18 +18,19 @@ clear
 
     while
     
-        read -p "    The path to the folder has space, do you want enter a path without space to avoid errors?(Y/N): " option
+        echo -en "    The path to the folder has space, do you want enter a path without space to avoid errors?(\033[1;32mY\033[0m/\033[1;31mN\033[0m): "
+        read option
 
-        if [[ $option = 'Y' || $option = 'y' ]]; then
+        if [[ $option = 'Y' || $option = 'y' || $option -eq 1 ]]; then
             clear; read -p "    Enter a path to the main folder: " mainFolder
 
-        elif [[ $option != 'N' && $option != 'n' ]]; then
-            clear; read -sp "    Invalid value, type ENTER and try again: " enterKey
+        elif [[ $option != 'N' && $option != 'n' && $option -ne 0 ]]; then
+            clear; echo -en "    Invalid value, type '\033[1;36mENTER\033[0m' and try again: "; read -s enterKey
         fi
 
         clear
 
-    [[ $option != 'Y' && $option != 'y' && $option != 'N' && $option != 'n' ]]
+    [[ $option != 'Y' && $option != 'y' && $option != 'N' && $option != 'n' && $option -ne 1 && $option -ne 0 ]]
     do true ; done
 
 validateFolder $mainFolder main

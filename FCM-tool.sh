@@ -22,7 +22,7 @@ until
 
     clear
 
-    echo -e "    How do you want to create the file?\n\n\t1) In a single folder\n\t2) In multiple folder\n\t0) Exit"
+    echo -e "    How do you want to create the file?\n\n\t\033[1;32m1)\033[0m In a single folder\n\t\033[1;32m2)\033[0m In multiple folder\n\t\033[1;31m0)\033[0m Exit\n"
 
     read option
 
@@ -48,7 +48,7 @@ until
 
                 clear
                 
-                echo -e "    In which directories do you want to create the files? \n\n\t1) In all directories in the main folder.\n\t2) Enter the name of the folders.\n\t0) Back.\n"
+                echo -e "    In which directories do you want to create the files? \n\n\t\033[1;32m1)\033[0m In all directories in the main folder.\n\t\033[1;32m2)\033[0m Enter the name of the folders.\n\t\033[1;31m0)\033[0m Back.\n"
             
                 read option
 
@@ -65,8 +65,8 @@ until
                         clear; read -ra folderList -d '' <<<`ls -I '*.*' -I '* *'`
                         
                         if [ `echo ${#folderList[*]}` -eq 0 ]; then
-                            echo -n "    Empty folder"
-                            read -sp ", type 'ENTER' and try again. . ." enterKey
+                            echo -en "    Empty folder, type \033[1;36m'ENTER'\033[0m and try again. . . "
+                            read -s enterKey
                             option=0
                         
                         else
@@ -88,10 +88,12 @@ until
                     # Type name
                     2) 
 
-                        clear; read -p "    Enter the name of the folders (different folders separated by space): " -ra folderList
+                        clear; echo -en "    Enter the name of the folders \033[1;37m(different folders separated by space)\033[0m: "; read -ra folderList
 
-                        echo -e "    You will create your files in the folder(s): `echo ${folderList[*]} | tr -s ' ' ', '`\n"
+                        echo -e "\n    You will create your files in the folder(s): \033[1;33m`echo ${folderList[*]} | tr -s ' ' ', '`\033[0m\n"
                         
+                        echo -en "    Type \033[1;36m'ENTER'\033[0m and try again. . . "
+                        read -s enterKey
                         clear
 
                         source $path/functions.sh validateFolderList
@@ -104,8 +106,7 @@ until
 
                     *) 
 
-                        clear ;
-                        read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
+                        clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
 
                     ;;
 
@@ -118,7 +119,7 @@ until
 
         # Try again
         *) 
-            clear; read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
+            clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
         ;;
 
     esac

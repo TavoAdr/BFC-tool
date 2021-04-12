@@ -4,41 +4,48 @@ function validateFolder(){
     
     folder=$1
 
-    if [[ ! -d $folder ]]; then
+    until
 
-        echo -e "    invalid folder ($folder), you want to:\n\n\t1) Create a new folder\n\t2) Retype the folder name\n\t0) Exit"
+        clear
+
+        if [[ ! -d $folder ]]; then
+
+            echo -e "    Invalid folder (\033[1;33m$folder\033[0m), you want to:\n\n\t\033[1;32m1)\033[0m Create a new folder\n\t\033[1;32m2)\033[0m Retype the folder name\n\t\033[1;31m0)\033[0m Exit"
+            
+            read option
+
+            case $option in
+
+                # Close
+                0)
+                    exit 0
+                ;;
+
+                1) # Create Folder
+
+                    folder=`echo $folder | tr -s ' ' '-'` # change space to hyphen
+                    mkdir $folder; clear
+                    validateFolder $folder
+                
+                ;;
+
+                2) # Retype
+                
+                    clear; read -p "    Enter a folder name: " folder
+                    validateFolder $folder
+                
+                ;;
+
+                *) # Try again
+                    clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again: "; read -s enterKey
+                ;;
+
+            esac
         
-        read option
+        fi
 
-        case $option in
-
-            # Close
-            0)
-                exit 0
-            ;;
-
-            1) # Create Folder
-
-                folder=`echo $folder | tr -s ' ' '-'` # change space to hyphen
-                mkdir $folder; clear
-                validateFolder $folder
-            
-            ;;
-
-            2) # Retype
-            
-                clear; read -p "    Enter a folder name: " folder
-                validateFolder $folder
-            
-            ;;
-
-            *) # Try again
-                clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
-            ;;
-
-        esac
-    
-    fi
+    [[ $option -ge 0 && $option -le 2 ]]
+    do true; done
 
 }
 # TEST create folder (1)
@@ -62,7 +69,7 @@ function editFolderList(){
     
     until
 
-        echo -e "    Do you want to:\n\n\t1) Create and add a new folder to list\n\t2) Remove folder\n\t3) Continue\n\t0) Back\n"
+        echo -e "    Do you want to:\n\n\t\033[1;32m1)\033[0m Create and add a new folder to list\n\t\033[1;32m2)\033[0m Remove folder\n\t\033[1;32m3)\033[0m Continue\n\t\033[1;31m0)\033[0m Back\n"
 
         read option
 
@@ -96,8 +103,8 @@ function editFolderList(){
                 clear
 
                 if [[ -z ${folderList[*]} ]]; then
-                    echo -en "    You can't remove folders of the list because the folder list is empty, "
-                    read -sp "type 'ENTER' to continue. . ." enterKey
+                    echo -en "    You can't remove folders of the list because the folder list is empty, type \033[1;36m'ENTER'\033[0m to continue. . . "
+                    read -s enterKey
 
                 else
 
@@ -105,7 +112,7 @@ function editFolderList(){
                     
                     cont=0
                     for a in ${folderList[@]}; do
-                        let cont++; echo -e "\t$cont) $a"
+                        let cont++; echo -e "\t\033[1;32m$cont)\033[0m $a"
                     done
                     
                     echo -e "\n"
@@ -115,7 +122,7 @@ function editFolderList(){
                         read -p "    Enter the number of the folder to be removed from the list: " folderPosition
                         
                         [[ $folderPosition -le 0 || $folderPosition -gt ${#folderList[*]} ]] && \
-                        echo -e "    Type the value in the range.\n"
+                            echo -e "    Type the value in the range.\n"
                     
                     [[ $folderPosition -ge 1 && $folderPosition -le ${#folderList[*]} ]]
                     do true ; done
@@ -149,8 +156,8 @@ function editFolderList(){
             3)
                 clear
                 if [[ -z ${folderList[*]} ]]; then
-                    echo -en "\n    You can't continue because there are no folders in the list, "
-                    read -sp "type 'ENTER' to continue. . ." enterKey
+                    echo -en "\n    You can't continue because there are no folders in the list, type \033[1;36m'ENTER'\033[0m to continue. . . "
+                    read -s enterKey
                 else
                     
                     createSubFolder
@@ -163,13 +170,13 @@ function editFolderList(){
             ;;
 
             *) 
-                clear; read -sp "    Invalid value, type 'ENTER' and try again. . ." enterKey
+                clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
             ;;
         esac
 
         [[ ! -z ${folderList[*]} ]] && \
-            echo -e "\n    Folder(s): `echo ${folderList[*]} | tr -s ' ' ', '`\n" && \
-            read -sp "    Type 'ENTER' to continue. . ." enterKey
+            echo -en "\n    Folder(s): \033[1;33m`echo ${folderList[*]} | tr -s ' ' ', '`\033[0m\n    Type \033[1;36m'ENTER'\033[0m to continue. . . " && \
+            read -s enterKey
         
         clear
 
@@ -191,7 +198,8 @@ function createSubFolder(){
 
     while
 
-        read -p "    Do you want to create subfolders?(Y/N): " option
+        echo -en "    Do you want to create subfolders?(\033[1;32mY\033[0m/\033[1;31mN\033[0m): "
+        read option
 
         if [[ $option = 'Y' || $option = 'y' ]]; then
             clear; read -p "    Enter the name to the subfolder: " newFolder
@@ -203,7 +211,7 @@ function createSubFolder(){
             done
 
         elif [[ $option != 'N' && $option != 'n' ]]; then
-            clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
+            clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again: "; read -s enterKey
         fi
 
         clear
@@ -224,21 +232,21 @@ function createFiles(){
 
     unset option
 
-    while
+    until
 
         clear
 
         if [[ $1 == m ]]; then
-            echo -e "    What method do you want to use to create the files?\n\n\t1) Organize files in folders according to their extension (Files with extension x in folder y).\n\t2) All files, with all extensions in all folders.\n"
+            echo -e "    What method do you want to use to create the files?\n\n\t\033[1;32m1)\033[0m Organize files in folders according to their extension \033[1;37m(Files with extension x in folder y)\033[0m.\n\t\033[1;32m2)\033[0m All files, with all extensions in all folders.\n"
             read option
         fi
 
-        clear; read -p "    Enter the name of the files (different files separated by space): " -ra fileList
+        clear; echo -en "    Enter the name of the files \033[1;37m(different files separated by space)\033[0m: "; read -ra fileList
         
-        clear; read -p "    Enter the name of the extensions (different extensions separated by space and without dot): " -ra extensionList
+        clear; echo -en "    Enter the name of the extensions \033[1;37m(different extensions separated by space and without dot)\033[0m: "; read -ra extensionList
 
         
-        clear; echo -e "    You intend to create the `echo ${fileList[@]} | tr -s ' ' ','` files of extension `echo ${extensionList[@]} | tr -s ' ' ','`.\n"
+        clear; echo -e "    You intend to create the \033[1;33m`echo ${fileList[@]} | tr -s ' ' ','`\033[0m files of extension \033[1;33m`echo ${extensionList[@]} | tr -s ' ' ','`\033[0m.\n"
 
         if [[ -n $option ]]; then
             fileNumber=$(( ${#folderList[@]} * ${#fileList[@]} * ${#extensionList[@]} ))
@@ -247,7 +255,7 @@ function createFiles(){
         fi
         contFiles=0
 
-        read -sp "    Type 'ENTER' to continue. . ." enterKey; clear
+        echo -en "    Type \033[1;36m'ENTER'\033[0m to continue. . . "; read -s enterKey; clear
 
         case $option in
 
@@ -259,7 +267,7 @@ function createFiles(){
                     for(( i=0; i<${#extensionList[@]}; i++ ));
                     do                        
                       
-                        clear; read -p "    Enter text to be added to all files of extension ${extensionList[$i]}(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+                        clear; echo -en "    Enter text to be added to all files of extension \033[1;33m${extensionList[$i]}\033[1;37m(use '\033[1;36mENTER\033[1;37m' to create empty file)\033[0m: "; read fileText
 
                         for fil in ${fileList[@]}
                         do
@@ -274,7 +282,7 @@ function createFiles(){
                     done
                         
                 else
-                    clear; read -sp "    When using this method, the number of files must equal the number of extensions, type 'ENTER' to continue. . ." enterKey
+                    clear; echo -en "    When using this method, the number of files must equal the number of extensions, type '\033[1;36mENTER\033[0m' to continue. . . "; read -s enterKey
                     option=127
                 fi
 
@@ -286,7 +294,7 @@ function createFiles(){
                 for ext in ${extensionList[@]}
                 do
 
-                    clear; read -p "    Enter text to be added to all files of extension $ext(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+                    clear; echo -en "    Enter text to be added to all files of extension \033[1;33m$ext\033[1;37m(use '\033[1;36mENTER\033[1;37m' to create empty file)\033[0m: "; read fileText
                         
                     for fold in ${folderList[@]}
                     do
@@ -313,7 +321,7 @@ function createFiles(){
                 for ext in ${extensionList[@]}
                 do
                     
-                    clear; read -p "    Enter text to be added to all files of extension $ext(use '\n' insert a new line, '\t' to tab and 'ENTER' to create empty file): " fileText
+                    clear; echo -en "    Enter text to be added to all files of extension \033[1;33m$ext\033[1;37m(use '\033[1;36mENTER\033[1;37m' to create empty file)\033[0m: "; read fileText
 
                     for fil in ${fileList[@]}
                     do
@@ -332,15 +340,15 @@ function createFiles(){
             
             # try again
             *) 
-                clear; read -sp "    Invalid value, type 'ENTER' and try again: " enterKey
+                clear; echo -en "    Invalid value, type '\033[1;36mENTER\033[0m' and try again: "; read -s enterKey
             ;;
 
         esac
 
-    [[ $option -lt 1 || $option -gt 2 ]]
+    [[ $option -ge 1 && $option -le 2 || -z $option ]]
     do true ; done
 
-    clear; read -sp "    $contFiles of $fileNumber files created successfully, type 'ENTER' to close." enterKey
+    clear; echo -en "    $contFiles of $fileNumber files created successfully, type '\033[1;36mENTER\033[0m' to close. . . "; read -s enterKey
     exit 0
 
 }
