@@ -65,8 +65,7 @@ until
                         clear; read -ra folderList -d '' <<<`ls -I '*.*' -I '* *'`
                         
                         if [ `echo ${#folderList[*]}` -eq 0 ]; then
-                            echo -en "    Empty folder, type \033[1;36m'ENTER'\033[0m and try again. . . "
-                            read -s enterKey
+                            read -sn1 -p "    Empty folder, type something and try again. . . " enterKey
                             option=0
                         
                         else
@@ -92,8 +91,7 @@ until
 
                         echo -e "\n    You will create your files in the folder(s): \033[1;33m`echo ${folderList[*]} | tr -s ' ' ', '`\033[0m\n"
                         
-                        echo -en "    Type \033[1;36m'ENTER'\033[0m and try again. . . "
-                        read -s enterKey
+                        read -sn1 -p "    Type something and try again. . . " enterKey
                         clear
 
                         source $path/functions.sh validateFolderList
@@ -105,27 +103,25 @@ until
                     ;;
 
                     *) 
-
-                        clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
-
+                        clear; read -sn1 -p "    Invalid value, type something and try again. . . " enterKey
                     ;;
 
                 esac
                 
             [[ $option -ge 0 && $option -le 2 ]]
-            do true ; done
+            do false ; done
 
         ;;
 
         # Try again
         *) 
-            clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
+            clear; read -sn1 -p "    Invalid value, type something and try again. . . " enterKey
         ;;
 
     esac
 
 [[ $option -ge 1 && $option -le 2 ]]
-do true ; done
+do false ; done
 
 # TEST type 1
  # -1 and 7 -> Error message

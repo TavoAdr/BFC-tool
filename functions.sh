@@ -37,7 +37,7 @@ function validateFolder(){
                 ;;
 
                 *) # Try again
-                    clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again: "; read -s enterKey
+                    clear; read -sn1 -p "    Empty folder, type something and try again. . . " enterKey
                 ;;
 
             esac
@@ -45,7 +45,7 @@ function validateFolder(){
         fi
 
     [[ $option -ge 0 && $option -le 2 ]]
-    do true; done
+    do false; done
 
 }
 # TEST create folder (1)
@@ -103,8 +103,7 @@ function editFolderList(){
                 clear
 
                 if [[ -z ${folderList[*]} ]]; then
-                    echo -en "    You can't remove folders of the list because the folder list is empty, type \033[1;36m'ENTER'\033[0m to continue. . . "
-                    read -s enterKey
+                    read -sn1 -p "    You can't remove folders of the list because the folder list is empty, type something and try again. . . " enterKey
 
                 else
 
@@ -156,8 +155,7 @@ function editFolderList(){
             3)
                 clear
                 if [[ -z ${folderList[*]} ]]; then
-                    echo -en "\n    You can't continue because there are no folders in the list, type \033[1;36m'ENTER'\033[0m to continue. . . "
-                    read -s enterKey
+                    read -sn1 -p "    You can't continue because there are no folders in the list, type something and try again. . . " enterKey
                 else
                     
                     createSubFolder
@@ -170,18 +168,18 @@ function editFolderList(){
             ;;
 
             *) 
-                clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again. . . "; read -s enterKey
+                clear; read -sn1 -p "    Invalid value, type something and try again. . . " enterKey
             ;;
         esac
 
         [[ ! -z ${folderList[*]} ]] && \
-            echo -en "\n    Folder(s): \033[1;33m`echo ${folderList[*]} | tr -s ' ' ', '`\033[0m\n    Type \033[1;36m'ENTER'\033[0m to continue. . . " && \
-            read -s enterKey
+            echo -e "\n    Folder(s): \033[1;33m`echo ${folderList[*]} | tr -s ' ' ', '`\033[0m" && \
+            read -sn1 -p "    Type something and try again. . . " enterKey
         
         clear
 
     [[ $option -eq 0 ]]
-    do true; done
+    do false; done
     
 }
              # TEST mk n ad to list (1)
@@ -200,8 +198,9 @@ function createSubFolder(){
 
         echo -en "    Do you want to create subfolders?(\033[1;32mY\033[0m/\033[1;31mN\033[0m): "
         read option
+        option=${option,,}
 
-        if [[ $option = 'Y' || $option = 'y' ]]; then
+        if [[ $option = 'y' ]]; then
             clear; read -p "    Enter the name to the subfolder: " newFolder
             subFolder=`echo $newFolder/ | tr -s ' ' '-'`
 
@@ -210,13 +209,13 @@ function createSubFolder(){
                 validateFolder $a/$subFolder
             done
 
-        elif [[ $option != 'N' && $option != 'n' ]]; then
-            clear; echo -en "    Invalid value, type \033[1;36m'ENTER'\033[0m and try again: "; read -s enterKey
+        elif [[ $option != 'n' ]]; then
+            clear; read -sn1 -p "    Invalid value, type something and try again. . . " enterKey
         fi
 
         clear
 
-    [[ $option != 'Y' && $option != 'y' && $option != 'N' && $option != 'n' ]]
+    [[ $option != 'y' && $option != 'n' ]]
     do true ; done
 
 }
@@ -255,7 +254,7 @@ function createFiles(){
         fi
         contFiles=0
 
-        echo -en "    Type \033[1;36m'ENTER'\033[0m to continue. . . "; read -s enterKey; clear
+        read -sn1 -p "    Empty folder, type something and try again. . . " enterKey; clear
 
         case $option in
 
@@ -282,7 +281,7 @@ function createFiles(){
                     done
                         
                 else
-                    clear; echo -en "    When using this method, the number of files must equal the number of extensions, type '\033[1;36mENTER\033[0m' to continue. . . "; read -s enterKey
+                    clear; echo -en "    When using this method, the number of files must equal the number of extensions, "; read -sn1 -p "type something and try again. . . " enterKey
                     option=127
                 fi
 
@@ -302,7 +301,7 @@ function createFiles(){
                         for fil in ${fileList[@]}
                         do
                             
-                            echo $fileText > `echo $fold`/`echo $subFolder``echo $fil | tr -d '.'`.`echo $ext  | tr -d '.'`
+                            echo $fileText >> `echo $fold`/`echo $subFolder``echo $fil | tr -d '.'`.`echo $ext  | tr -d '.'`
 
                             [[ $? -eq 0 ]] && \
                                 let contFiles++;
@@ -340,15 +339,15 @@ function createFiles(){
             
             # try again
             *) 
-                clear; echo -en "    Invalid value, type '\033[1;36mENTER\033[0m' and try again: "; read -s enterKey
+                clear; read -sn1 -p "    Invalid value, type '\033[1;36mENTER\033[0m' and try again: " enterKey
             ;;
 
         esac
 
     [[ $option -ge 1 && $option -le 2 || -z $option ]]
-    do true ; done
+    do false ; done
 
-    clear; echo -en "    $contFiles of $fileNumber files created successfully, type '\033[1;36mENTER\033[0m' to close. . . "; read -s enterKey
+    clear; read -sn1 -p "    $contFiles of $fileNumber files created successfully, type something and try again. . . " enterKey
     exit 0
 
 }
