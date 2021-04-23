@@ -59,6 +59,8 @@ function setMainFolder(){
 
     main_folder=${*}
 
+    echo $main_folder -- main_folder $* -- 
+
     [[ -z ${main_folder} ]] && \
         read -p "    In which folder do you want to run the program? " main_folder
 
@@ -314,35 +316,35 @@ function createFiles(){
         [[ ${*} == 'm' ]] && \
             showMenu "What method do you want to use to create the files?:-:0Organize files in folders according to their extension ${txt_bold}(Files with extension x in folder y).${txt_none}:-:1All files, with all extensions in all folders.:-:2Exit03"
 
-        while [[ -z $fileList ]]; do
+        while [[ -z $file_list ]]; do
             
             clear
             
             echo -en "    Enter the name of the files ${txt_bold}(different files separated by space)${txt_none}: "
             
-            read -ra fileList
+            read -ra file_list
 
-            [[ -z $fileList ]] && \
+            [[ -z $file_list ]] && \
             clear && pause "You can't create a file without name"
         
         done
         
-        while [[ -z $extensionList ]]; do
+        while [[ -z $extension_list ]]; do
             
             clear
             
             echo -en "    Enter the name of the extensions ${txt_bold}(different extensions separated by space and without dot)${txt_none}: "
             
-            read -ra extensionList
+            read -ra extension_list
 
-            [[ -z $extensionList ]] && \
+            [[ -z $extension_list ]] && \
                 clear && pause "You can't create a file without extension"
         
         done
         
         clear
         
-        echo -e "    You intend to create the ${txt_yellow}${fileList[@]// /,}${txt_none} files of extension ${txt_yellow}${extensionList[@]// /,}${txt_none}.\n"
+        echo -e "    You intend to create the ${txt_yellow}${file_list[@]// /,}${txt_none} files of extension ${txt_yellow}${extension_list[@]// /,}${txt_none}.\n"
 
         contFiles=0
 
@@ -359,19 +361,19 @@ function createFiles(){
             # 1 - 1
             1)
 
-                fileNumber=$(( ${#folderList[@]} * ${#fileList[@]} ))
+                fileNumber=$(( ${#folderList[@]} * ${#file_list[@]} ))
 
-                if [[ ${#folderList[@]} -eq ${#extensionList[@]} ]]; then
+                if [[ ${#folderList[@]} -eq ${#extension_list[@]} ]]; then
                     
-                    for(( i=0; i<${#extensionList[@]}; i++ ));
+                    for(( i=0; i<${#extension_list[@]}; i++ ));
                     do                        
                       
-                        clear; echo -en "    Enter text to be added to all files of extension ${txt_yellow}${extensionList[${i}]}${txt_bold}(use '${txt_blue}ENTER${txt_bold}' to create an empty file)${txt_none}: "; read fileText
+                        clear; echo -en "    Enter text to be added to all files of extension ${txt_yellow}${extension_list[${i}]}${txt_bold}(use '${txt_blue}ENTER${txt_bold}' to create an empty file)${txt_none}: "; read fileText
 
-                        for fil in ${fileList[@]}
+                        for fil in ${file_list[@]}
                         do
                             
-                            echo -e ${fileText} >> ${folderList[${i}]}/${subFolder}${fil//./}.${extensionList[${i}]//./}
+                            echo -e ${fileText} >> ${folderList[${i}]}/${subFolder}${fil//./}.${extension_list[${i}]//./}
 
                             [[ ${?} -eq 0 ]] && \
                                 let contFiles++;
@@ -390,9 +392,9 @@ function createFiles(){
             # all - all
             2)
 
-                fileNumber=$(( ${#folderList[@]} * ${#fileList[@]} * ${#extensionList[@]} ))
+                fileNumber=$(( ${#folderList[@]} * ${#file_list[@]} * ${#extension_list[@]} ))
 
-                for ext in ${extensionList[@]}
+                for ext in ${extension_list[@]}
                 do
 
                     clear
@@ -404,7 +406,7 @@ function createFiles(){
                     for fold in ${folderList[@]}
                     do
 
-                        for fil in ${fileList[@]}
+                        for fil in ${file_list[@]}
                         do
                             
                             echo -e ${fileText} >> ${fold}/${subFolder}${fil//./}.${ext//./}
@@ -423,14 +425,14 @@ function createFiles(){
             # simple
             '')
 
-                fileNumber=$(( ${#fileList[@]} * ${#extensionList[@]} ))
+                fileNumber=$(( ${#file_list[@]} * ${#extension_list[@]} ))
 
-                for ext in ${extensionList[@]}
+                for ext in ${extension_list[@]}
                 do
                     
                     clear; echo -en "    Enter text to be added to all files of extension ${txt_yellow}${ext}${txt_bold}(use '${txt_blue}ENTER${txt_bold}' to create an empty file)${txt_none}: "; read fileText
 
-                    for fil in ${fileList[@]}
+                    for fil in ${file_list[@]}
                     do
                         
                         echo ${fileText} >> ${fil//./}.${ext//./}
