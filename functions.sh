@@ -4,21 +4,22 @@ function showMenu(){
 
     local _full_text=${*}
     local _cut_text=${_full_text/:-:0*/}
+    local _show
 
     clear
 
     echo -e "\n    ${_cut_text}\n"
 
-    for(( i = 1; i < ${_full_text: -2}; i++ )); do
+    for(( _show = 1; _show < ${_full_text: -2}; _show++ )); do
 
-        _full_text=${_full_text/*:-:$(( i - 1 ))/}
-        _cut_text=${_full_text/:-:${i}*/}
+        _full_text=${_full_text/*:-:$(( _show - 1 ))/}
+        _cut_text=${_full_text/:-:${_show}*/}
     
-        echo -e "\t${txt_green}${i})${txt_none} ${_cut_text}"
+        echo -e "\t${txt_green}${_show})${txt_none} ${_cut_text}"
     
     done
 
-    _full_text=${_full_text/*:-:$(( i - 1 ))/}
+    _full_text=${_full_text/*:-:$(( _show - 1 ))/}
     echo -en "\t${txt_red}0)${txt_none} ${_full_text/${_full_text: -2}/}\n\n"
 
     read -n1 -p "    : " option
@@ -66,10 +67,15 @@ function pause(){
 
     done
 
+    echo ''
+
     if [[ -n ${_beg_txt} && -n ${_end_txt} ]]; then
     
         if [[ ${_beg_txt} = 0 ]]; then
+            
+            clear
             _beg_txt="Empty folder"
+
         elif [[ ${_beg_txt} = -1 ]]; then
             _beg_txt="Invalid value"
         fi
@@ -79,7 +85,10 @@ function pause(){
         elif [[ ${_end_txt} = 1 ]]; then
             _end_txt="continue"
         elif [[ ${_end_txt} = -1 ]]; then
+    
+            clear
             _end_txt="try again"
+    
         fi
         
         read -sn1 ${_time} -p "    ${_beg_txt}, type something to ${_end_txt}. . . " enterKey
@@ -88,7 +97,7 @@ function pause(){
         read -sn1 ${_time} -p "    Type something to continue. . . " enterKey
     fi
 
-    echo -e '\n'
+    echo ''
     
     return 0
 
@@ -108,6 +117,8 @@ function setMainFolder(){
     unset vfReturn
 
     cd ${main_folder// /?}
+
+    return 0
 
 }
 
@@ -173,8 +184,14 @@ function validateFolder(){
 
 function validateFolderList(){
 
-    for a in ${folderList[@]}; do
-        validateFolder ${a}
+    local _fl
+
+    for (( _fl = 0; _fl < ${#folderList[*]}; _fl++ )); do
+        
+        validateFolder "${folderList[${_fl}]}"
+        folderList[${_fl}]=${vfReturn}
+        unset vfReturn
+
     done
 
 }
@@ -405,14 +422,14 @@ function createFiles(){
 
                 if [[ ${#folderList[@]} -eq ${#extension_list[@]} ]]; then
                     
-                    for(( i=0; i<${#extension_list[@]}; i++ ));
+                    for(( _el = 0; _el < ${#extension_list[@]}; _el++ ));
                     do                        
                       
                         if [[ -z $no_txt ]]; then
 
                             clear
                             
-                            echo -en "\n    Enter text to be added to all files of extension ${txt_yellow}${extension_list[${i}]}${txt_bold}(use '${txt_blue}ENTER${txt_bold}' to create an empty file)${txt_none}: " 
+                            echo -en "\n    Enter text to be added to all files of extension ${txt_yellow}${extension_list[${_el}]}${txt_bold}(use '${txt_blue}ENTER${txt_bold}' to create an empty file)${txt_none}: " 
                             
                             read -r fileText
 
@@ -421,7 +438,7 @@ function createFiles(){
                         for fil in ${file_list[@]}
                         do
                             
-                            echo -e "${fileText}" >> ${folderList[${i}]}/${subFolder}${fil//./}.${extension_list[${i}]//./}
+                            echo -e "${fileText}" >> ${folderList[${_el}]}/${subFolder}${fil//./}.${extension_list[${_el}]//./}
 
                             [[ ${?} -eq 0 ]] && \
                                 let contFiles++;
@@ -429,6 +446,8 @@ function createFiles(){
                         done
 
                     done
+
+                    unset _el
                         
                 else
                     clear; pause -beg "When using this method, the number of files must equal the number of extensions" -end -1
