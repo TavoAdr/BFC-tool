@@ -17,7 +17,7 @@ until
 
     # - - Main
     [[ ${#} -le 2 ]] && \
-        ${call_func} showMenu "\n \t \b /----------\ \n\t\b <| FCM-tool |> \n \t \b \----------/\n\n\t\b\b\b\bWhat do you want to do?:-:0Start file creation.:-:1See control manual.:-:2Change main folder.\n\t<| ${main_folder} |>:-:3Exit.04" || \
+        ${call_func} showMenu " \t \b /----------\ \n\t\b <| FCM-tool |> \n \t \b \----------/\n\n\t\b\b\b\bWhat do you want to do?:-:0Start file creation.:-:1See control manual.:-:2Change main folder.\n\t<| ${main_folder} |>:-:3Exit.04" || \
         option=1
 
     case ${option} in
@@ -78,7 +78,7 @@ until
                                     
                                     else
                                     
-                                        echo -e "    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
+                                        echo -e "\n    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
 
                                         ${call_func} pause
 
@@ -101,7 +101,7 @@ until
                                     
                                         clear
                                         
-                                        echo -en "    Enter the name of the folders ${txt_bold}(different folders separated by space)${txt_none}: "
+                                        echo -en "\n    Enter the name of the folders ${txt_bold}(different folders separated by space)${txt_none}: "
                                         
                                         read -ra folderList
 
@@ -113,7 +113,7 @@ until
 
                                     clear
 
-                                    echo -e "    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
+                                    echo -e "\n    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
                                     
                                     ${call_func} pause
 

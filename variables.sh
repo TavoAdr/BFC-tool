@@ -18,6 +18,10 @@
     echo -e "${help_text}" | less && \
     exit 0
 
+ # file without text
+  [[ `echo ${*} | grep -ci 'notxt'` == 1 ]] && \
+    no_txt=1
+
  # sing folder
   [[ `echo ${*} | grep -ci 'sing'` == 1 ]] && \
     folder_structures=1
@@ -74,7 +78,7 @@
 
     fi
     
-   # sing or mult
+   # mult options
     if [[  $folder_structures == mult ]]; then
 
         # all files
@@ -88,9 +92,9 @@
         fi
         
         # type
-        if [[ ${1,,} == -*tc* ]]; then
+        if [[ ${1,,} == -*tpc* ]]; then
             echo '-tc'
-        elif [[ ${1,,} == -*t* ]]; then
+        elif [[ ${1,,} == -*tp* ]]; then
             echo '-t'
         fi
 
@@ -103,6 +107,7 @@
 
 unset _in
 
+ echo $no_txt -- no_txt
  echo $folder_structures -- folder_structures
  echo $main_folder -- main_folder
  echo ${file_list[0]} -- file_list0
@@ -117,8 +122,10 @@ unset _in
  echo ${extension_list[3]} -- extension_list3
  echo ${extension_list[4]} -- extension_list4
  echo ${extension_list[5]} -- extension_list5
+
 # exit
 read oi
+
 # -----------------------------------------------------
 
 # - - Define Main Folder
