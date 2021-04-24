@@ -123,8 +123,7 @@ unset _in
  echo ${extension_list[4]} -- extension_list4
  echo ${extension_list[5]} -- extension_list5
 
-# exit
-read oi
+${call_func} pause -beg 0 -end 1
 
 # -----------------------------------------------------
 

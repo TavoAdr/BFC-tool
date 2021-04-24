@@ -31,20 +31,61 @@ function showMenu(){
 
 function pause(){
 
-    if [[ -n ${*} ]]; then
-    
-        if [[ ${*} = 0 ]]; then
-            read -sn1 -p "    Empty folder, type something and to continue. . . " enterKey
+    local _in
 
-        elif [[ ${*} = -1 ]]; then
-            clear; read -sn1 -p "    Invalid value, type something and to continue. . . " enterKey
+    while [[ -n ${1} ]]; do
 
-        else
-            read -sn1 -p "    ${*}, type something and to continue. . . " enterKey
+        _in=${1}
+
+        if [[ ${1,,} == -*beg* ]]; then
+            
+            shift
+            local _beg_txt=${1}
+            shift
+            
+
         fi
+
+        if [[ ${1,,} == -*end* ]]; then
+
+            shift
+            local _end_txt=${1}
+            shift
+
+        fi
+
+        if [[ ${1,,} == -*t+([0-9]) ]]; then
+
+            local _time=-t${1,,//-*t/}
+            shift
+
+        fi
+
+        [[ ${_in} == ${1} ]] && \
+            shift
+
+    done
+
+    if [[ -n ${_beg_txt} && -n ${_end_txt} ]]; then
+    
+        if [[ ${_beg_txt} = 0 ]]; then
+            _beg_txt="Empty folder"
+        elif [[ ${_beg_txt} = -1 ]]; then
+            _beg_txt="Invalid value"
+        fi
+        
+        if [[ ${_end_txt} = 0 ]]; then
+            _end_txt="exit"
+        elif [[ ${_end_txt} = 1 ]]; then
+            _end_txt="continue"
+        elif [[ ${_end_txt} = -1 ]]; then
+            _end_txt="try again"
+        fi
+        
+        read -sn1 ${_time} -p "    ${_beg_txt}, type something to ${_end_txt}. . . " enterKey
     
     else
-        read -sn1 -p "    Type something and to continue. . . " enterKey
+        read -sn1 ${_time} -p "    Type something to continue. . . " enterKey
     fi
 
     echo -e '\n'
@@ -109,7 +150,7 @@ function validateFolder(){
                 ;;
 
                 *) # Try again
-                    clear; pause -1
+                    clear; pause -beg -1 -end -1
                 ;;
 
             esac
@@ -176,7 +217,7 @@ function editFolderList(){
                 clear
 
                 if [[ -z ${folderList[*]} ]]; then
-                    pause "You can't remove folders of the list because the folder list is empty"
+                    pause -beg "You can't remove folders of the list because the folder list is empty" -end 1
 
                 else
 
@@ -230,7 +271,7 @@ function editFolderList(){
             3)
                 clear
                 if [[ -z ${folderList[*]} ]]; then
-                    pause "You can't continue because there are no folders in the list"
+                    pause -beg "You can't continue because there are no folders in the list" -end -1
                 else
                     
                     createSubFolder
@@ -243,7 +284,7 @@ function editFolderList(){
             ;;
 
             *) 
-                pause -1
+                pause -beg -1 -end -1
             ;;
         esac
 
@@ -286,7 +327,7 @@ function createSubFolder(){
             done
 
         elif [[ ${option} != 'n' && ${option} -ne 0 ]]; then
-            pause -1
+            pause -beg -1 end -1
         fi
 
         clear
@@ -323,7 +364,7 @@ function createFiles(){
             read -ra file_list
 
             [[ -z $file_list ]] && \
-            clear && pause "You can't create a file without name"
+            clear && pause -beg "You can't create a file without name" -end -1
         
         done
         
@@ -336,7 +377,7 @@ function createFiles(){
             read -ra extension_list
 
             [[ -z $extension_list ]] && \
-                clear && pause "You can't create a file without extension"
+                clear && pause -beg "You can't create a file without extension" -end -1
         
         done
         
@@ -347,6 +388,7 @@ function createFiles(){
         contFiles=0
 
         pause
+
         clear
 
         case ${option} in
@@ -389,7 +431,7 @@ function createFiles(){
                     done
                         
                 else
-                    clear; pause "When using this method, the number of files must equal the number of extensions"
+                    clear; pause -beg "When using this method, the number of files must equal the number of extensions" -end -1
                     option=127
                 fi
 
@@ -467,7 +509,7 @@ function createFiles(){
             
             # try again
             *) 
-                pause -1
+                pause -beg -1 -end -1
             ;;
 
         esac
@@ -476,7 +518,7 @@ function createFiles(){
     do false ; done
 
     clear
-    pause "${contFiles} of ${fileNumber} files created successfully"
+    pause -beg "${contFiles} of ${fileNumber} files created successfully" -end 0
     exit 0
 
 }

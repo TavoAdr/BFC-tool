@@ -72,7 +72,7 @@ until
                                     
                                     if [ ${#folderList[*]} -eq 0 ]; then
                                         
-                                        ${call_func} pause 0
+                                        ${call_func} pause -beg 0 -end 1
                                         
                                         option=0
                                     
@@ -107,7 +107,7 @@ until
 
                                         [[ -z $folderList ]] && \
                                             clear && \
-                                            pause "You can't use the option to create files in multiple folder without providing the folder name"
+                                            pause -beg "You can't use the option to create files in multiple folder without providing the folder name" -end 1
 
                                     done
 
@@ -128,7 +128,7 @@ until
                                 ;;
 
                                 *) 
-                                    ${call_func} pause -1
+                                    ${call_func} pause beg -1 -eng -1
                                 ;;
 
                             esac
@@ -140,7 +140,7 @@ until
 
                     # Try again
                     *) 
-                        ${call_func} pause -1
+                        ${call_func} pause -beg -1 -end -1
                     ;;
 
                 esac
@@ -166,9 +166,8 @@ until
 
         # Try again
         *) 
-            ${call_func} pause -1
+            ${call_func} pause -beg -1 -end -1
         ;;
-
 
     esac
 
