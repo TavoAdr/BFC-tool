@@ -259,9 +259,9 @@ function editFolderList(){
                     [[ ${_folder_position} -ge 1 && ${_folder_position} -le ${#folderList[*]} ]]
                     do true ; done
 
-                    local _position=0                                           # count the number of positions in the list
-                    local _element=0                                            # count the number of positions not empty in the list
-                    local _full_list=$(( ${#folderList[*]} + ${_removed} ))    # List size if full
+                    local _position=0                                       # count the positions
+                    local _element=0                                        # count the positions not empty
+                    local _full_list=$(( ${#folderList[*]} + ${_removed} )) # List size if full
                     
                     while [[ ${_position} -lt ${_full_list} && ${_elemento} -ne ${_folder_position} ]]; do
 
@@ -287,15 +287,42 @@ function editFolderList(){
             # Continue
             3)
                 clear
+
                 if [[ -z ${folderList[*]} ]]; then
                     pause -beg "You can't continue because there are no folders in the list" -end -1
                 else
-                    
-                    createSubFolder
+                                        
+                    # create subfolder
+                    while
+
+                        echo -en "\n    Do you want to create subfolders?(${txt_green}Y${txt_none}/${txt_red}N${txt_none}): "
+                        read -n1 option
+                        option=${option,,}
+
+                        if [[ ${option} = 'y' || ${option} -eq 1  ]]; then
+                            clear; read -p "    Enter the name to the subfolder: " _newFolder
+                            subFolder=${_newFolder// /-}/
+
+                            for a in ${folderList[@]}; do
+                                mkdir -p ${a}/${subFolder}
+                                validateFolder ${a}/${subFolder}
+                            done
+
+                            unset _newFolder
+                            
+                        elif [[ ${option} != 'n' && ${option} -ne 0 ]]; then
+                            pause -beg -1 end -1
+                        fi
+
+                        clear
+
+                    [[ ${option} != 'y' && ${option} != 'n' && ${option} -ne 1 && ${option} -ne 0 ]]
+                    do true ; done
 
                     clear
 
                     createFiles m
+
                 fi
                     
             ;;
@@ -315,52 +342,6 @@ function editFolderList(){
     do false; done
     
 }
-             # TEST mk n ad to list (1)
-              # sem espaço -> just create
-              # com espaço -> add hyphen
-             # TEST remove (2)
-              # invalid position -> error message
-              # 1 position -> remove
-              # all elements -> empty list
-             # TEST continue (3)
-              # continue if empty list -> error message
-
-function createSubFolder(){
-
-    while
-
-        echo -en "\n    Do you want to create subfolders?(${txt_green}Y${txt_none}/${txt_red}N${txt_none}): "
-        read -n1 option
-        option=${option,,}
-
-        if [[ ${option} = 'y' || ${option} -eq 1  ]]; then
-            local _newFolder
-            clear; read -p "    Enter the name to the subfolder: " _newFolder
-            subFolder=${_newFolder// /-}/
-
-            for a in ${folderList[@]}; do
-                mkdir -p ${a}/${subFolder}
-                validateFolder ${a}/${subFolder}
-            done
-
-        elif [[ ${option} != 'n' && ${option} -ne 0 ]]; then
-            pause -beg -1 end -1
-        fi
-
-        clear
-
-    [[ ${option} != 'y' && ${option} != 'n' && ${option} -ne 1 && ${option} -ne 0 ]]
-    do true ; done
-
-}
- # TEST subFolder (*)
-  # Error message
- # TEST subFolder (n)
-  # Continue (file)
- # TEST subFolder (y)
-  # type with space -> replace the space to hyphen
-  # ENTER -> validate folder
-
 function createFiles(){
 
     unset option
