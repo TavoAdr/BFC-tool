@@ -126,7 +126,7 @@ function setMainFolder(){
             unset vfReturn
 
         elif [[ ${_ret} -eq 1 ]]; then
-            pause -beg "You can't continue without defining the main folder" -end -1
+            pause -beg "You can't continue without defining the main folder" -end -1 -t10
         fi
 
     [[ ${_ret} -eq 0  ]]
@@ -178,7 +178,7 @@ function validateFolder(){
                 ;;
 
                 *) # Try again
-                    clear; pause -beg -1 -end -1
+                    pause -beg -1 -end -1 -t5
                 ;;
 
             esac
@@ -229,8 +229,9 @@ function editFolderList(){
 
         case ${option} in
             
-            # Empty to continue without error message
+            # Back
             0)
+                unset folderList[*]
                 clear;
             ;;
             
@@ -257,7 +258,7 @@ function editFolderList(){
                 clear
 
                 if [[ -z ${folderList[*]} ]]; then
-                    pause -beg "You can't remove folders of the list because the folder list is empty" -end 1
+                    pause -beg "You can't remove folders of the list because the folder list is empty" -end 1 -t10
 
                 else
 
@@ -312,7 +313,7 @@ function editFolderList(){
                 clear
 
                 if [[ -z ${folderList[*]} ]]; then
-                    pause -beg "You can't continue because there are no folders in the list" -end -1
+                    pause -beg "You can't continue because there are no folders in the list" -end -1 -t10
                 else
                                         
                     # create subfolder
@@ -334,7 +335,7 @@ function editFolderList(){
                             unset _newFolder
 
                         elif [[ ${option} != 'n' && ${option} -ne 0 ]]; then
-                            pause -beg -1 end -1
+                            pause -beg -1 -end -1 -t5
                         fi
 
                         clear
@@ -351,13 +352,13 @@ function editFolderList(){
             ;;
 
             *) 
-                pause -beg -1 -end -1
+                pause -beg -1 -end -1 -t5
             ;;
         esac
 
         [[ ! -z ${folderList[*]} ]] && \
             echo -e "\n    Folder(s): ${txt_yellow}${folderList[*]// /,}${txt_none}" && \
-            pause
+            pause -t15
         
         clear
 
@@ -385,7 +386,7 @@ function createFiles(){
             read -ra file_list
 
             [[ -z $file_list ]] && \
-            clear && pause -beg "You can't create a file without name" -end -1
+            clear && pause -beg "You can't create a file without name" -end -1 -t10
         
         done
         
@@ -398,7 +399,7 @@ function createFiles(){
             read -ra extension_list
 
             [[ -z $extension_list ]] && \
-                clear && pause -beg "You can't create a file without extension" -end -1
+                clear && pause -beg "You can't create a file without extension" -end -1 -t10
         
         done
         
@@ -408,7 +409,7 @@ function createFiles(){
 
         contFiles=0
 
-        pause
+        pause -t15
 
         clear
 
@@ -454,7 +455,7 @@ function createFiles(){
                     unset _el
                         
                 else
-                    clear; pause -beg "When using this method, the number of files must equal the number of extensions" -end -1
+                    pause -beg "When using this method, the number of files must equal the number of extensions" -end -1 -t15
                     option=127
                 fi
 
@@ -532,7 +533,7 @@ function createFiles(){
             
             # try again
             *) 
-                pause -beg -1 -end -1
+                pause -beg -1 -end -1 -t5
             ;;
 
         esac
@@ -541,7 +542,7 @@ function createFiles(){
     do false ; done
 
     clear
-    pause -beg "${contFiles} of ${fileNumber} files created successfully" -end 0
+    pause -beg "${contFiles} of ${fileNumber} files created successfully" -end 0 -t15
     exit 0
 
 }

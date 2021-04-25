@@ -8,7 +8,6 @@ file_path=$(pwd)
 cd ${OLDPWD}
 
 echo $file_path
-sleep
 
 # - - Read File thats create the main variables of the files
 source ${file_path}/variables.sh "${@//'\ '/' '}"
@@ -71,19 +70,19 @@ until
 
                                     clear
                                     
-                                    read -ra folderList -d '' <<<`ls -d * 2> /dev/null`
+                                    read -ra folderList -d '' <<<`ls -d */ 2> /dev/null`
                                     
                                     if [ ${#folderList[*]} -eq 0 ]; then
                                         
-                                        ${call_func} pause -beg 0 -end 1
+                                        ${call_func} pause -beg 0 -end 1 -t5
                                         
                                         option=0
                                     
                                     else
                                     
-                                        echo -e "\n    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
+                                        echo -e "\n    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}"
 
-                                        ${call_func} pause
+                                        ${call_func} pause -t15
 
                                         clear
 
@@ -110,7 +109,7 @@ until
 
                                         [[ -z $folderList ]] && \
                                             clear && \
-                                            pause -beg "You can't use the option to create files in multiple folder without providing the folder name" -end 1
+                                            pause -beg "You can't use the option to create files in multiple folder without providing the folder name" -end 1 -t15
 
                                     done
 
@@ -118,7 +117,7 @@ until
 
                                     echo -e "\n    You will create your files in the folder(s): ${txt_yellow}${folderList[*]}${txt_none}\n"
                                     
-                                    ${call_func} pause
+                                    ${call_func} pause -t15
 
                                     clear
 
@@ -131,7 +130,7 @@ until
                                 ;;
 
                                 *) 
-                                    ${call_func} pause beg -1 -eng -1
+                                    ${call_func} pause -beg -1 -end -1 -t5
                                 ;;
 
                             esac
@@ -143,7 +142,7 @@ until
 
                     # Try again
                     *) 
-                        ${call_func} pause -beg -1 -end -1
+                        ${call_func} pause -beg -1 -end -1 -t5
                     ;;
 
                 esac
@@ -169,7 +168,7 @@ until
 
         # Try again
         *) 
-            ${call_func} pause -beg -1 -end -1
+            ${call_func} pause -beg -1 -end -1 -t5
         ;;
 
     esac
