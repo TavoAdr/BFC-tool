@@ -3,9 +3,12 @@
 clear
 
 # - - Program Path
-cd ${0/${0/*\//}/}
+cd $(dirname "$0")
 file_path=$(pwd)
 cd ${OLDPWD}
+
+echo $file_path
+sleep
 
 # - - Read File thats create the main variables of the files
 source ${file_path}/variables.sh "${@//'\ '/' '}"
@@ -173,17 +176,3 @@ until
 
 [[ ${option} -eq 1 ]]
 do false ; done
-
- # TEST path 
-  # $HOME or $OLDPWD
-  # ~ 
-  # ./ or ../
-# TEST type 1
- # -1 and 7 -> Error message
- # o ->  Exit
- # 1 ->  Continue ( file )
- # 2 ->  Continue ( single or all )
-# TEST type 2 ( single or all )
- # 0 -> Back ( Lose list )
- # 1 -> Empty -> Error message | continue ( Edit List )
- # 2 -> Empty -> ( Continue, but show Error message if don't include a folder to list ) | sdfghghj -> error message ( validate folder )

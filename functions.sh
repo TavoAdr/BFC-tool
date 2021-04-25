@@ -175,12 +175,6 @@ function validateFolder(){
     return 0
 
 }
- # TEST create folder (1)
-  # normal -> create
-  # with space -> change space to hyphen
- # TEST retype (2)
-  # valid -> retest
-  # invalid -> choose again what to do
 
 function validateFolderList(){
 
@@ -309,7 +303,7 @@ function editFolderList(){
                             done
 
                             unset _newFolder
-                            
+
                         elif [[ ${option} != 'n' && ${option} -ne 0 ]]; then
                             pause -beg -1 end -1
                         fi
@@ -522,15 +516,5 @@ function createFiles(){
     exit 0
 
 }
- # TEST enter var
-  # File and Extensions with an without dot -> create the file with just one point if extension is not empty
-  # Empty file and Extensions -> Error message
-  # File name that already exists -> Add a new line in the end of the file
- # TEST method
-  # 1
-   # ne sizes of vars -> show error message
-   # eq sizes of vars -> continue
-  # 2
-  # ''
 
 ${*}
