@@ -32,6 +32,8 @@ function showMenu(){
 
 function pause(){
 
+    echo ''
+
     local _in
 
     while [[ -n ${1} ]]; do
@@ -57,7 +59,7 @@ function pause(){
 
         if [[ ${1,,} == -*t+([0-9]) ]]; then
 
-            local _time=-t${1,,//-*t/}
+            local _time=${1,,//-*t/-t}
             shift
 
         fi
@@ -67,13 +69,11 @@ function pause(){
 
     done
 
-    echo ''
-
     if [[ -n ${_beg_txt} && -n ${_end_txt} ]]; then
     
         if [[ ${_beg_txt} = 0 ]]; then
             
-            clear
+            clear && echo ''
             _beg_txt="Empty folder"
 
         elif [[ ${_beg_txt} = -1 ]]; then
@@ -86,7 +86,7 @@ function pause(){
             _end_txt="continue"
         elif [[ ${_end_txt} = -1 ]]; then
     
-            clear
+            clear && echo ''
             _end_txt="try again"
     
         fi
@@ -94,7 +94,9 @@ function pause(){
         read -sn1 ${_time} -p "    ${_beg_txt}, type something to ${_end_txt}. . . " enterKey
     
     else
+
         read -sn1 ${_time} -p "    Type something to continue. . . " enterKey
+
     fi
 
     echo ''
@@ -109,12 +111,26 @@ function setMainFolder(){
 
     main_folder=${*}
 
-    [[ -z ${main_folder} ]] && \
-        read -p "    In which folder do you want to run the program? " main_folder
+    until
 
-    validateFolder ${main_folder}
-    main_folder=${vfReturn}
-    unset vfReturn
+        [[ -z ${main_folder} ]] && \
+            read -p "    In which folder do you want to run the program? " main_folder
+
+        validateFolder ${main_folder}
+
+        local _ret=${?}
+
+        if [[ ${_ret} -eq 0 ]]; then
+
+            main_folder=${vfReturn}
+            unset vfReturn
+
+        elif [[ ${_ret} -eq 1 ]]; then
+            pause -beg "You can't continue without defining the main folder" -end -1
+        fi
+
+    [[ ${_ret} -eq 0  ]]
+    do false; done
 
     cd ${main_folder// /?}
 
@@ -136,13 +152,14 @@ function validateFolder(){
 
         else
 
-            ${call_func} showMenu "Invalid folder (${txt_yellow}${_folder}${txt_none}), you want to::-:0Create a new folder.:-:1Retype the folder name.:-:2Exit.03"
+            ${call_func} showMenu "Invalid folder (${txt_yellow}${_folder}${txt_none}), you want to::-:0Create a new folder.:-:1Retype the folder name.:-:2Cancel.03"
             
             case ${option} in
 
                 # Close
                 0)
-                    exit 0
+                    clear
+                    return 1
                 ;;
 
                 1) # Create Folder
@@ -178,13 +195,25 @@ function validateFolder(){
 
 function validateFolderList(){
 
+    local _list_size=${#folderList[*]}
     local _fl
 
-    for (( _fl = 0; _fl < ${#folderList[*]}; _fl++ )); do
+    for (( _fl = 0; _fl < ${_list_size}; _fl++ )); do
         
         validateFolder "${folderList[${_fl}]}"
-        folderList[${_fl}]=${vfReturn}
-        unset vfReturn
+
+        local _ret=${?}
+        
+        if [[ ${_ret} -eq 0 ]]; then
+        
+            folderList[${_fl}]=${vfReturn}    
+            unset vfReturn
+
+        elif [[ ${_ret} -eq 1 ]]; then
+            
+            unset folderList[${_fl}]
+        
+        fi
 
     done
 
